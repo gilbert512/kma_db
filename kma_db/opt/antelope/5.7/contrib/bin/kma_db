@@ -1,0 +1,51 @@
+#!/opt/antelope/python2.7.8/bin/python
+
+# work by Gilbert. 2020.12.01
+
+import sys
+import os
+import os.path
+
+sys.path.append( '/opt/antelope/5.7/data/python' )
+
+import antelope.datascope as ds
+import antelope.stock as stock
+import getopt
+
+from sys import version_info
+if version_info.major == 2:
+	import Tkinter as tk
+elif version_info.major == 3:
+	import tkinter as tk
+
+home_path = os.path.expanduser(os.path.join('~','knsn'))
+
+dbname = home_path + '/db/knsn'
+out_dir = home_path + '/for_eqdb'
+orid_file = out_dir + '/orid'
+
+#print home_path
+#print dbname
+#print out_dir
+
+if os.path.exists(orid_file) and os.path.getsize(orid_file) != 0:
+	orid_no = open(orid_file, 'r')
+	line = orid_no.read()
+	d_orid = line.strip()
+	orid_no.close()
+#	print d_orid
+else:
+	import tkFont
+        app = tk.Tk()
+	app.geometry('300x200')
+	app.title("KMA Working Info.")
+        labelEx = tk.Label(app, text="Please Check orid !!", font=("Times", 20))
+        labelEx.pack()
+	labelEx.place(x=20, y=20)
+        app.mainloop()
+
+os.system('echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" &>> ' + out_dir + '/log')
+os.system('epoch now >> ' + out_dir + '/log')
+os.system('echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" &>> ' + out_dir + '/log')
+os.system('dbsplit -v -s orid=='+ d_orid + " " + dbname + " " + out_dir + '/knsn_'+d_orid + " &>> " + out_dir + '/log')
+os.system('cp /dev/null' +  " " + out_dir + '/orid')
